@@ -20,38 +20,16 @@ routes.get('/home/tablas', isAuthenticated, (req, res) => {  //pedir tablas de d
       res.send(proyecto);
 
    });
-   
+
 });
 
 routes.post('/home/tablas', isAuthenticated, (req, res) => { //registrar tablas de datos
-   
-   const { username, password } = req.body; //buscamos usuario y pass del frontend
-   if (!username || !password) { return res.status(400).send('Faltan datos'); } //validamos que existan
 
-   crypto.randomBytes(48, (err, salt) => {
-      if (err) return res.status(500).send('Error Generando salt l-1');
+   //buscamos tabla del frontend
+   //validamos que si existe, en dado caso la modificamos y si no existe la creamos
 
-      const newSalt = salt.toString('base64');
-      crypto.pbkdf2(password, newSalt, 10000, 64, 'sha1', (err, key) => {
-         if (err) return res.status(500).send('Error Generando salt l-2');
+   res.send('tabla creado correctamente');
 
-         const encryptedPassword = key.toString('base64');
-
-         //verificamos si existe el usuario, sino registramos
-         Users.findOne({ username }).exec().then(User => {
-            if (User) return res.status(400).send('El usuario ya existe l-3');
-
-            //no existe, lo registramos
-            Users.create({
-               username: username,
-               password: encryptedPassword,
-               salt: newSalt,
-            }).then(() => {
-               res.send('Usuario creado correctamente');
-            })
-         });
-      });
-   });
 });
 
 module.exports = routes;
