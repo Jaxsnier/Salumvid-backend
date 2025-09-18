@@ -4,7 +4,7 @@ const Ventana = require('./Ventana');
 
 const Proyecto = mongoose.model('Proyecto',new mongoose.Schema({
   name: String,
-  ventanas : Ventana,
+  ventanas : [Ventana],
   
 }));
 
