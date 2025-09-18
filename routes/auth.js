@@ -16,7 +16,7 @@ const signToken = (_id) => {
 }
 
 routes.get('/', (req, res) => {
-   res.send(' Accedio auth con metodo GET, Fovor utilice POST');
+   res.send(' Accedio auth con metodo GET, Favor utilice POST');
 });
 
 routes.post('/register', (req, res) => {

@@ -2,10 +2,11 @@ const mongoose = require('mongoose');
 const Ventana = require('./Ventana');
 
 
-const Proyecto = mongoose.model('Proyecto',new mongoose.Schema({
-  name: String,
-  ventanas : [Ventana],
+const Proyectos = mongoose.model('Proyectos',new mongoose.Schema({
+  propietario: String,
+  proyecto_nombre: String,
+  arreglo_ventanas: [Ventana],
   
 }));
 
-module.exports = Proyecto;
+module.exports = Proyectos;
