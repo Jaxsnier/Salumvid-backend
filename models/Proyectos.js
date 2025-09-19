@@ -1,11 +1,14 @@
 const mongoose = require('mongoose');
-const Ventana = require('./Ventana');
+const { Schema } = require('mongoose');
 
 
 const Proyectos = mongoose.model('Proyectos',new mongoose.Schema({
   propietario: String,
   proyecto_nombre: String,
-  arreglo_ventanas: [Ventana],
+  arreglo_ventanas: [{
+     type:Schema.Types.ObjectId,
+     ref:'Ventana'
+  }],
   
 }));
 

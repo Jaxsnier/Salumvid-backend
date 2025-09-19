@@ -2,6 +2,7 @@ const express = require('express');
 const isAuthenticated = require('../auth');
 const routes = express.Router();
 const Proyectos = require('../models/Proyectos');
+const Ventana = require('../models/Ventana');
 
 routes.get('/', (req, res) => {
    res.send(' hola soy home sin authentication');
@@ -12,24 +13,75 @@ routes.get('/home', isAuthenticated, (req, res) => {
 });
 
 
-routes.get('/home/tablas', isAuthenticated, (req, res) => {  //pedir tablas de datos
+routes.get('/home/tablas', isAuthenticated, async (req, res) => {  //pedir tablas de datos
 
-   Proyectos.findOne({ proyecto_nombre }).exec().then(proyecto => {
-      if (!proyecto) return res.status(401).send('Proyecto incorrecto l-1'); // verificamos si encontro un proyecto con ese nombre
+   const proyecto = await Proyectos.findOne({ propietario: req.user._id,proyecto_nombre: req.body.proyecto_nombre }).populate("arreglo_ventanas")
 
-      res.send(proyecto);
-
-   });
+   return res.send(proyecto);
 
 });
 
-routes.post('/home/tablas', isAuthenticated, (req, res) => { //registrar tablas de datos
+routes.post('/home/tablas', isAuthenticated, async (req, res) => { //registrar proyecto
+   const proyecto = await Proyectos.findOne({ propietario: req.user._id, proyecto_nombre: req.body.proyecto_nombre }) //buscamos proyecto
+ 
+   if (proyecto) return res.send("Nombre invalido: repetido") // verificamos si esta repetido
 
-   //buscamos tabla del frontend
-   //validamos que si existe, en dado caso la modificamos y si no existe la creamos
+   // guardamos
+   const nuevoProyecto = new Proyectos({
+      propietario: req.user._id,
+      proyecto_nombre: req.body.proyecto_nombre,
+      arreglo_ventanas: [],
+   })
 
-   res.send('tabla creado correctamente');
+   await nuevoProyecto.save().then((res_proyecto) => {
+      res.send(res_proyecto);
+   }).catch((err) => {
+      console.log(err)
+      return res.send("Error al salvar en bd");
+   })
 
 });
+
+routes.patch('/home/tablas', isAuthenticated, async (req, res) => { //modificar o crear una ventana
+   
+   const proyecto = await Proyectos.findOne({propietario: req.user._id, proyecto_nombre: req.body.proyecto_nombre})
+   if(!proyecto) return res.send(`proyecto ${req.body.proyecto_nombre} no existe`);
+
+   const nueva_ventana = new Ventana({
+      Id: req.body.Id,
+    Hueco_Cant: req.body.Hueco_Cant,
+    Hueco_Ancho: req.body.Hueco_Ancho,
+    Hueco_Alto: req.body.Hueco_Alto,
+    Hueco_Hojas: req.body.Hueco_Hojas,
+    //<!-- Perfiles Marco -->
+    Perfiles_Marco_Cant: req.body.Perfiles_Marco_Cant,
+    Perfiles_Marco_Medida: req.body.Perfiles_Marco_Medida,
+    Perfiles_Marco_Cant: req.body.Perfiles_Marco_Cant,
+    Perfiles_Marco_Medida: req.body.Perfiles_Marco_Medida,
+    //<!-- Perfiles Hoja -->
+    Perfiles_Hoja_Cant: req.body.Perfiles_Hoja_Cant,
+    Perfiles_Hoja_Medida: req.body.Perfiles_Hoja_Medida,
+    Perfiles_Hoja_Cant: req.body.Perfiles_Hoja_Cant,
+    Perfiles_Hoja_Medida: req.body.Perfiles_Hoja_Medida,
+    //<!-- Vidrio -->
+    Viderio_Cant: req.body.Viderio_Cant,
+    Viderio_Ancho: req.body.Viderio_Ancho,
+    Viderio_Alto: req.body.Viderio_Alto,
+    //<!-- Goma -->
+    Goma_Pie: req.body.Goma_Pie,
+   })
+
+   await nueva_ventana.save()
+   proyecto.arreglo_ventanas = proyecto.arreglo_ventanas.push(nueva_ventana._id)
+   
+   await Proyectos.findByIdAndUpdate(proyecto._id,{
+      arreglo_ventanas: proyecto.arreglo_ventanas
+   }).then(() => { return res.send(nueva_ventana)}).catch((err) => {
+      console.log(err)
+      return res.send("error L-1");
+   })
+
+});
+
 
 module.exports = routes;
