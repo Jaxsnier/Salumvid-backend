@@ -3,6 +3,7 @@ const isAuthenticated = require('../auth');
 const routes = express.Router();
 const Proyectos = require('../models/Proyectos');
 const Ventana = require('../models/Ventana');
+const Tablas = require("../tablas/Bd_tablas");
 
 routes.get('/', (req, res) => {
    res.send(' hola soy home sin authentication');
@@ -19,6 +20,16 @@ routes.get('/home/tablas', isAuthenticated, async (req, res) => {  //pedir tabla
 
    return res.send(proyecto);
 
+ /*  try {
+      // use query for GET requests; fall back to body if provided
+      const proyecto_nombre = req.body.proyecto_nombre;
+      const tabla = await Tablas.BuscarTabla(req.user._id, proyecto_nombre);
+      
+      if (!tabla) return res.status(404).send('Tabla no encontrada');
+      
+      return res.send(tabla);
+
+   } catch (err) {console.error(err);return res.status(500).send('Error al obtener tablas');}*/
 });
 
 routes.post('/home/tablas', isAuthenticated, async (req, res) => { //registrar proyecto
