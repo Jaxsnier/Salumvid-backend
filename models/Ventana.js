@@ -1,4 +1,4 @@
-const mongoose = require('mongoose');
+import mongoose from 'mongoose'
 
 
 const Ventana = mongoose.model('Ventana', new mongoose.Schema({
@@ -26,4 +26,4 @@ const Ventana = mongoose.model('Ventana', new mongoose.Schema({
     Goma_Pie: String,
 }));
 
-module.exports = Ventana;
+export default Ventana;

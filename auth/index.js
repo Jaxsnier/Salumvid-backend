@@ -1,7 +1,7 @@
-const jwt = require('jsonwebtoken');
-const Users = require('../models/Users.js');
+import jwt from 'jsonwebtoken'
+import Users from '../models/Users.js'
 
-module.exports = (req, res, next) => {
+const auth = (req, res, next) => {
    const token = req.headers.authorization;
    if (!token) return res.status(403).send('No autorizado, falta token l-1');
 
@@ -18,3 +18,5 @@ module.exports = (req, res, next) => {
         })
     });
 }
+
+export default auth;

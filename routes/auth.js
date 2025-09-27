@@ -1,8 +1,8 @@
-const express = require('express');
-const crypto = require('crypto');
-const Users = require('../models/Users');
-const jwt = require('jsonwebtoken');
-const isAuthenticated = require('../auth');
+import express from 'express'
+import crypto from 'crypto'
+import Users from '../models/Users.js'
+import jwt from 'jsonwebtoken'
+import isAuthenticated from '../auth/index.js'
 
 
 const routes = express.Router();
@@ -74,4 +74,4 @@ routes.get('/me',isAuthenticated, (req, res) => {
    });
 });
 
-module.exports = routes;
+export default routes;

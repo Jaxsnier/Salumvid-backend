@@ -1,9 +1,10 @@
-const express = require('express');
-const isAuthenticated = require('../auth');
+import express from 'express'
+import isAuthenticated from '../auth/index.js'
+import Proyectos from '../models/Proyectos.js'
+import Ventana from '../models/Ventana.js'
+import * as Tablas from "../tablas/Bd_tablas.js"
+
 const routes = express.Router();
-const Proyectos = require('../models/Proyectos');
-const Ventana = require('../models/Ventana');
-const Tablas = require("../tablas/Bd_tablas");
 
 routes.get('/', (req, res) => {
    res.send(' hola soy home sin authentication');
@@ -15,12 +16,7 @@ routes.get('/home', isAuthenticated, (req, res) => {
 
 
 routes.get('/home/tablas', isAuthenticated, async (req, res) => {  //pedir tablas de datos
-
-   const proyecto = await Proyectos.findOne({ propietario: req.user._id,proyecto_nombre: req.body.proyecto_nombre }).populate("arreglo_ventanas")
-
-   return res.send(proyecto);
-
- /*  try {
+   try {
       // use query for GET requests; fall back to body if provided
       const proyecto_nombre = req.body.proyecto_nombre;
       const tabla = await Tablas.BuscarTabla(req.user._id, proyecto_nombre);
@@ -29,7 +25,7 @@ routes.get('/home/tablas', isAuthenticated, async (req, res) => {  //pedir tabla
       
       return res.send(tabla);
 
-   } catch (err) {console.error(err);return res.status(500).send('Error al obtener tablas');}*/
+   } catch (err) {console.error(err);return res.status(500).send('Error al obtener tablas');}
 });
 
 routes.post('/home/tablas', isAuthenticated, async (req, res) => { //registrar proyecto
@@ -95,4 +91,4 @@ routes.patch('/home/tablas', isAuthenticated, async (req, res) => { //modificar 
 });
 
 
-module.exports = routes;
+export default routes;

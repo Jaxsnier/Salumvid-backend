@@ -1,16 +1,19 @@
-require('dotenv').config();
-const mongoose = require('mongoose');
-const bodyParser = require('body-parser');
-const cors = require('cors');
-const express = require('express');
+import 'dotenv/config';
+import mongoose from 'mongoose'
+import bodyParser from 'body-parser'
+import cors from 'cors'
+import express from 'express'
+import auth from './routes/auth.js'
+import home from './routes/home.js'
+
 
 const app = express();
 app.use(bodyParser.json());
 app.use(cors());
 
 const routes = express.Router();
-const auth = require('./routes/auth');
-const home = require('./routes/home');
+
+
 
 const MONGODB_URI = process.env.URI
 
@@ -24,4 +27,4 @@ app.listen(process.env.PORT || 3000, () => {
   console.log(`\n Server is running`);
 });
 
-module.exports = app;
+export default app;
