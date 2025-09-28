@@ -29,24 +29,16 @@ routes.get('/home/tablas', isAuthenticated, async (req, res) => {  //pedir tabla
 });
 
 routes.post('/home/tablas', isAuthenticated, async (req, res) => { //registrar proyecto
-   const proyecto = await Proyectos.findOne({ propietario: req.user._id, proyecto_nombre: req.body.proyecto_nombre }) //buscamos proyecto
- 
-   if (proyecto) return res.send("Nombre invalido: repetido") // verificamos si esta repetido
+   try {
+      // use query for GET requests; fall back to body if provided
+      const proyecto_nombre = req.body.proyecto_nombre;
+      const nuevoProyecto = await Tablas.CrearTabla(req.user._id, proyecto_nombre);
 
-   // guardamos
-   const nuevoProyecto = new Proyectos({
-      propietario: req.user._id,
-      proyecto_nombre: req.body.proyecto_nombre,
-      arreglo_ventanas: [],
-   })
-
-   await nuevoProyecto.save().then((res_proyecto) => {
-      res.send(res_proyecto);
-   }).catch((err) => {
-      console.log(err)
-      return res.send("Error al salvar en bd");
-   })
-
+      if (!nuevoProyecto) return res.status(400).send('Error al crear tabla');
+   } catch (err) {console.error(err);return res.status(500).send('Error al crear tabla');}
+   
+   // return
+   res.send(res_proyecto);
 });
 
 routes.patch('/home/tablas', isAuthenticated, async (req, res) => { //modificar o crear una ventana

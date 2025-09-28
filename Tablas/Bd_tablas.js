@@ -8,9 +8,26 @@ export async function BuscarTabla(userId, proyecto_nombre) {  //pedir tablas de 
    return proyecto
 };
 
-export async function CrearTabla(params) 
+export async function CrearTabla(userId, proyecto_nombre) 
 {
-   return null
+    const proyecto = BuscarTabla(userId, proyecto_nombre, proyecto_nombre) //buscamos proyecto
+ 
+   if (proyecto) return res.send("Nombre invalido: repetido") // verificamos si esta repetido
+
+   // guardamos
+   const nuevoProyecto = new Proyectos({
+      propietario: userId,
+      proyecto_nombre: proyecto_nombre,
+      arreglo_ventanas: [],
+   })
+
+   await nuevoProyecto.save().then((res_proyecto) => {
+     return res_proyecto;
+   }).catch((err) => {
+      console.log(err)
+      return res.send("Error al salvar en bd CrearTabla");
+   })
+
 }
 
 export async function ActualizarTabla(params) 
