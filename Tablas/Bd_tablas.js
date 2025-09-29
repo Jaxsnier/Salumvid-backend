@@ -9,6 +9,13 @@ export async function BuscarTabla(userId, proyecto_nombre) {  //pedir tablas de 
    return proyecto
 };
 
+export async function BuscarProyectos(userId) {  //pedir tablas de datos
+
+   const listProyectos = await Proyectos.find({ propietario: userId});
+
+   return listProyectos
+};
+
 export async function CrearTabla(userId, proyecto_nombre) {
    const proyecto = await BuscarTabla(userId, proyecto_nombre, proyecto_nombre) //buscamos proyecto para saber si ya existe
 

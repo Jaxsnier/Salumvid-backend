@@ -53,5 +53,13 @@ routes.patch('/home/tablas', isAuthenticated, async (req, res) => { //modificar 
 
 });
 
+routes.get('/home/proyecto', isAuthenticated, async (req, res) => {  //pedir listado de proyectos
+   try {
+      const listaProyectos = await Tablas.BuscarProyectos(req.user._id)
+      return res.send (listaProyectos);
+
+   } catch (err) {console.error(err);return res.status(500).send('Error al obtener tablas');}
+});
+
 
 export default routes;
