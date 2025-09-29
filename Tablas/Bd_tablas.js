@@ -1,4 +1,5 @@
 import Proyectos from "../models/Proyectos.js";
+import Ventana from '../models/Ventana.js'
 
 //buscar tabla en base de datos de proyecto
 export async function BuscarTabla(userId, proyecto_nombre) {  //pedir tablas de datos
@@ -21,20 +22,22 @@ export async function CrearTabla(userId, proyecto_nombre) {
    })
 
    const resultado = await nuevoProyecto.save().then((res_proyecto) => {
-      console.log(res_proyecto)   //aqui se envia el proyecto      error seguimiento
       return res_proyecto;
-   }).catch((err) => {
-      console.log(err)
-      return ("Error al salvar en bd CrearTabla");
-   })
+   }).catch((err) => {console.log(err); return ("Error al salvar en bd CrearTabla");})
 
    return resultado
 }
 
-export async function ActualizarTabla(userId, req) {
-   
+export async function AgregarVentana(req) {
+//Buscamos proyecto
    const proyecto = await BuscarTabla(req.user._id, req.body.proyecto_nombre)
    if (!proyecto) return (`proyecto ${req.body.proyecto_nombre} no existe`)
+
+//comprobamos si la ventana ya existe dentro del proyecto haciendo la busqueda en arreglo_ventanas
+   const ventana_existente = proyecto.arreglo_ventanas.find((ventanaId) => ventanaId.Id === req.body.Id);
+
+   if (ventana_existente) 
+      return ModificarVentana(ventana_existente, req) //si existe la ventana la modificamos
 
    const nueva_ventana = new Ventana({
       Id: req.body.Id,
@@ -65,11 +68,39 @@ export async function ActualizarTabla(userId, req) {
 
    await Proyectos.findByIdAndUpdate(proyecto._id, {
       arreglo_ventanas: proyecto.arreglo_ventanas
-   }).then(() => { 
-      return (nueva_ventana) 
    })
    .catch((err) => {console.log(err); return ("error al untentar actualizar bd");})
    
+   return (nueva_ventana)
+}
+
+export async function ModificarVentana(ventana_existente, req) {
+
+   //Modificamos la ventana existente y la retornamos
+   const ventanaFinal = await Ventana.findByIdAndUpdate(ventana_existente._id, {
+      Hueco_Cant: req.body.Hueco_Cant,
+      Hueco_Ancho: req.body.Hueco_Ancho,
+      Hueco_Alto: req.body.Hueco_Alto,
+      Hueco_Hojas: req.body.Hueco_Hojas,
+      //<!-- Perfiles Marco -->
+      Perfiles_Marco_Cant: req.body.Perfiles_Marco_Cant,
+      Perfiles_Marco_Medida: req.body.Perfiles_Marco_Medida,
+      Perfiles_Marco_Cant: req.body.Perfiles_Marco_Cant,
+      Perfiles_Marco_Medida: req.body.Perfiles_Marco_Medida,
+      //<!-- Perfiles Hoja -->
+      Perfiles_Hoja_Cant: req.body.Perfiles_Hoja_Cant,
+      Perfiles_Hoja_Medida: req.body.Perfiles_Hoja_Medida,
+      Perfiles_Hoja_Cant: req.body.Perfiles_Hoja_Cant,
+      Perfiles_Hoja_Medida: req.body.Perfiles_Hoja_Medida,
+      //<!-- Vidrio -->
+      Viderio_Cant: req.body.Viderio_Cant,
+      Viderio_Ancho: req.body.Viderio_Ancho,
+      Viderio_Alto: req.body.Viderio_Alto,
+      //<!-- Goma -->
+      Goma_Pie: req.body.Goma_Pie,
+   }, { new: true }).catch((err) => {console.log(err); return ("error al untentar actualizar bd");}) //new:true para que retorne el objeto actualizado
+
+   return ventanaFinal //retornamos la ventana modificada (error, envia la ventana sin modificar)
 }
 
 export const prueba = () => {
