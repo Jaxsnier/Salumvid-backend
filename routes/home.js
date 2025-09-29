@@ -30,15 +30,16 @@ routes.get('/home/tablas', isAuthenticated, async (req, res) => {  //pedir tabla
 
 routes.post('/home/tablas', isAuthenticated, async (req, res) => { //registrar proyecto
    try {
-      // use query for GET requests; fall back to body if provided
       const proyecto_nombre = req.body.proyecto_nombre;
       const nuevoProyecto = await Tablas.CrearTabla(req.user._id, proyecto_nombre);
 
+      console.log(nuevoProyecto) //aqui es undefined  error de seguimiento
+
       if (!nuevoProyecto) return res.status(400).send('Error al crear tabla');
+      res.send(nuevoProyecto);
+
    } catch (err) {console.error(err);return res.status(500).send('Error al crear tabla');}
    
-   // return
-   res.send(res_proyecto);
 });
 
 routes.patch('/home/tablas', isAuthenticated, async (req, res) => { //modificar o crear una ventana
